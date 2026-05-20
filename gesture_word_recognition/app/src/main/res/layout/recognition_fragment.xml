@@ -17,11 +17,20 @@
 
 
     <Button
-        android:id="@+id/bttRFragWordRec"
+        android:id="@+id/bttFragWordRec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start!"
         android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/tvWordRecogDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -40,4 +49,12 @@
         android:text="Start!"
         android:layout_marginTop="10dp"/>
 
+    <TextView
+        android:id="@+id/tvGestureRecogDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        />
 </LinearLayout>
