@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             } else if (checkedId == R.id.bttRecognition) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.i.fragment_container, new RecognitionFragment())
+                        .replace(R.id.fragment_container, new RecognitionFragment())
                         .addToBackStack(null)
                         .commit();
             }
