@@ -57,11 +57,11 @@ public class TrainingFragment extends Fragment {
             Bundle result = new Bundle();
             result.putString("cmd", "start_word_recording");
 
-            getParentFragmentManager().setFragmentResult("start_word_recording", result);
+            getParentFragmentManager().setFragmentResult("training_word_cmd", result);
             tvWordRecordDone.setText("Recording...");
         });
 
-        getParentFragmentManager().setFragmentResultListener("training_request", this, (requestKey, bundle) -> {
+        getParentFragmentManager().setFragmentResultListener("training_word_feedback", this, (requestKey, bundle) -> {
             String status = bundle.getString("status");
             if ("Recording finished".equals(status)) {
                 tvWordRecordDone.setText("Word recorded!");
