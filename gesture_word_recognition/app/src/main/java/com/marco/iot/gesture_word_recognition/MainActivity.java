@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private TextView tvResult;
 
     private float[] wordTemplate;
+    private float[] wordSample;
+
     private ISensor accelerometer;
     private List<Float> gestureTemplateX = new ArrayList<>();
     private List<Float> gestureTemplateY = new ArrayList<>();
@@ -109,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                     }
                 });
 
+
+
+
+
     }
 
     private void startAccelerometerDataCollection() {
@@ -147,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             gestureTemplateY.add(y);
             gestureTemplateZ.add(z);
         }
-        else if (mode.equals("recognition")) {
+        if (mode.equals("recognition")) {
             gestureSampleX.add(x);
             gestureSampleY.add(y);
             gestureSampleZ.add(z);
@@ -162,16 +168,23 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         result.putString("status", "gesture_done");
         if (mode.equals("training"))
             getSupportFragmentManager().setFragmentResult("training_gesture_feedback", result);
-        else if (mode.equals("recognition"))
+        if (mode.equals("recognition"))
             getSupportFragmentManager().setFragmentResult("recognition_gesture_feedback", result);
     }
 
     @Override
     public void onRecordingDone(short[] audioData) {
-        wordTemplate = audioSamplesConvertionToFloat(audioData);
-
         Bundle result = new Bundle();
         result.putString("status", "Recording finished");
-        getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
+
+        if(mode.equals("training")){
+            wordTemplate = audioSamplesConvertionToFloat(audioData);
+            getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
+        }
+        if(mode.equals("recognition")){
+            wordSample = audioSamplesConvertionToFloat(audioData);
+            getSupportFragmentManager().setFragmentResult("recognition_word_feedback", result);
+        }
+
     }
 }
