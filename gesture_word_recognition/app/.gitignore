@@ -1,1 +1,64 @@
-/build
+# =====================
+# Android Studio / IntelliJ IDEA
+# =====================
+# Escludi i file/cartelle locali di .idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/shelf/
+.idea/caches/
+.idea/libraries/
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/deploymentTargetDropDown.xml
+.idea/migrations.xml
+.idea/render.experimental.xml
+.idea/inspectionProfiles/
+
+# Tieni tracciati (non escludere):
+# .idea/codeStyles/
+
+# .idea/vcs.xml
+# .idea/misc.xml
+# .idea/modules.xml
+# .idea/gradle.xml
+# .idea/runConfigurations/
+
+*.iml
+
+# =====================
+# Gradle
+# =====================
+.gradle/
+local.properties
+
+# =====================
+# Build outputs
+# =====================
+/build/
+app/build/
+*/build/
+
+# =====================
+# Keystore e file sensibili
+# =====================
+*.jks
+*.keystore
+*.p12
+
+# =====================
+# File di sistema
+# =====================
+.DS_Store
+Thumbs.db
+
+# =====================
+# Captures / Profiler
+# =====================
+/captures/
+
+# =====================
+# Native build
+# =====================
+.externalNativeBuild/
+.cxx/
