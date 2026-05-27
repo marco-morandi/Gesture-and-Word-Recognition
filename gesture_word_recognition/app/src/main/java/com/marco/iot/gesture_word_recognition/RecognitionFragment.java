@@ -36,9 +36,7 @@ public class RecognitionFragment extends Fragment {
         tvWordRecogDone = view.findViewById(R.id.tvWordRecogDone);
         tvGestureRecogDone = view.findViewById(R.id.tvGestureRecogDone);
 
-        bttFragWordRec.setOnClickListener(v -> {
 
-        });
     }
 
     @Override

@@ -61,7 +61,7 @@ public class TrainingFragment extends Fragment {
             tvWordRecordDone.setText("Recording...");
         });
 
-        getParentFragmentManager().setFragmentResultListener("training_request", this, (requestKey, bundle) -> {
+        getParentFragmentManager().setFragmentResultListener("training_word_feedback", this, (requestKey, bundle) -> {
             String status = bundle.getString("status");
             if ("Recording finished".equals(status)) {
                 tvWordRecordDone.setText("Word recorded!");
