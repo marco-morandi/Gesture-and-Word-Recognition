@@ -22,6 +22,7 @@ import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private MaterialButtonToggleGroup bttChooseButton;
     private TextView tvResult;
 
-
+    private float[] wordTemplate;
     private ISensor accelerometer;
     private List<Float> templateAccX = new ArrayList<>();
     private List<Float> templateAccY = new ArrayList<>();
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                 });
 
 
+
     }
 
     private void startAccelerometerDataCollection() {
@@ -118,6 +120,14 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             onAccelerometerCollectionDone();
         }, RECORDING_LENGTH_IN_SEC * 1000L);
 
+    }
+
+    private float[] audioSampplesConvertiontoFloat(short[] input) {
+        float[] output = new float[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = (float) input[i] / 32768.0f;
+        }
+        return output;
     }
 
     @Override
@@ -139,6 +149,10 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     @Override
     public void onRecordingDone(short[] audioData) {
+        wordTemplate = audioSampplesConvertiontoFloat(audioData);
 
+        Bundle result = new Bundle();
+        result.putString("status", "Recording finished");
+        getSupportFragmentManager().setFragmentResult("training_request", result);
     }
 }
