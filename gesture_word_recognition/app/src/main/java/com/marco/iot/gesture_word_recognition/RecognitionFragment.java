@@ -36,6 +36,20 @@ public class RecognitionFragment extends Fragment {
         tvWordRecogDone = view.findViewById(R.id.tvWordRecogDone);
         tvGestureRecogDone = view.findViewById(R.id.tvGestureRecogDone);
 
+        bttFragGestureRec.setOnClickListener(v -> {
+            Bundle result = new Bundle();
+            result.putString("cmd", "start_accelerometer");
+
+            getParentFragmentManager().setFragmentResult("recognition_acc_cmd", result);
+            tvGestureRecogDone.setText("Recording...");
+        });
+
+        getParentFragmentManager().setFragmentResultListener("recognition_gesture_feedback", this, (key, bundle) -> {
+            String status = bundle.getString("status");
+            Log.i(TAG, "Status: " + status);
+            if ("gesture_done".equals(status))
+                tvGestureRecogDone.setText("Gesture recorded!");
+        });
 
     }
 

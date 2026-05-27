@@ -36,10 +36,15 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     private float[] wordTemplate;
     private ISensor accelerometer;
-    private List<Float> templateAccX = new ArrayList<>();
-    private List<Float> templateAccY = new ArrayList<>();
-    private List<Float> templateAccZ = new ArrayList<>();
-    private boolean accIsCollecting = false;
+    private List<Float> gestureTemplateX = new ArrayList<>();
+    private List<Float> gestureTemplateY = new ArrayList<>();
+    private List<Float> gestureTemplateZ = new ArrayList<>();
+    private boolean isRecordingGesture = false;
+    private List<Float> gestureSampleX = new ArrayList<>();
+    private List<Float> gestureSampleY = new ArrayList<>();
+    private List<Float> gestureSampleZ = new ArrayList<>();
+
+
     private Handler accHandler = new Handler(Looper.getMainLooper());
 
     private ISensor recorder;
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                     }
                 });
 
-        getSupportFragmentManager().setFragmentResultListener("start_word_recording", this,
+        getSupportFragmentManager().setFragmentResultListener("training_word_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
                     Log.i(TAG, "Command: "+ cmd);
@@ -104,19 +109,21 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
 
 
+
+
     }
 
     private void startAccelerometerDataCollection() {
-        templateAccX.clear();
-        templateAccY.clear();
-        templateAccZ.clear();
+        gestureTemplateX.clear();
+        gestureTemplateY.clear();
+        gestureTemplateZ.clear();
 
-        accIsCollecting = true;
+        isRecordingGesture = true;
         accelerometer.start();
 
         accHandler.postDelayed(() -> {
             accelerometer.stop();
-            accIsCollecting = false;
+            isRecordingGesture = false;
             onAccelerometerCollectionDone();
         }, RECORDING_LENGTH_IN_SEC * 1000L);
 
@@ -132,11 +139,11 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     @Override
     public void onNewAccelerometerDataAvailable(float x, float y, float z) {
-        if(!accIsCollecting) { return; }
+        if(!isRecordingGesture) { return; }
 
-        templateAccX.add(x);
-        templateAccY.add(y);
-        templateAccZ.add(z);
+        gestureTemplateX.add(x);
+        gestureTemplateY.add(y);
+        gestureTemplateZ.add(z);
     }
 
     public void onAccelerometerCollectionDone() {
@@ -153,6 +160,6 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
         Bundle result = new Bundle();
         result.putString("status", "Recording finished");
-        getSupportFragmentManager().setFragmentResult("training_request", result);
+        getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
     }
 }
