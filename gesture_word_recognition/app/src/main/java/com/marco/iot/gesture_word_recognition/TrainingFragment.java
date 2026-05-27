@@ -41,7 +41,7 @@ public class TrainingFragment extends Fragment {
         tvWordRecordDone = view.findViewById(R.id.tvWordRecordDone);
         tvGestureRecordDone = view.findViewById(R.id.tvGestureRecordDone);
 
-        
+
     }
 
     @Override
