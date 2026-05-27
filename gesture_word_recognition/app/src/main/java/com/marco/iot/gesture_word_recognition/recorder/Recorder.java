@@ -1,22 +1,18 @@
 package com.marco.iot.gesture_word_recognition.recorder;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import com.marco.iot.gesture_word_recognition.interfaces.IRecording;
-
-import java.util.ArrayList;
+import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 
 public class Recorder {
     private final String TAG = "Recorder";
@@ -30,7 +26,7 @@ public class Recorder {
     private AudioRecord audioRecord = null;
 
     private Context context;
-    private IRecording iRecording;
+    private INewDataAvailable iRecording;
 
 
     public Recorder(Context context, int fsInHz, int recordingLengthInSec) {
@@ -42,7 +38,7 @@ public class Recorder {
         this.nSamples = fsInHz * this.recordingLengthInSec;
 
         this.context = context;
-        iRecording = (IRecording) context;
+        iRecording = (INewDataAvailable) context;
     }
 
     public void start() {
