@@ -44,7 +44,7 @@ public class Accelerometer implements ISensor, SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) { }
 
     @Override
-    public void onSensorChanged(SensorEvent event) { // implements callback method when sensor data changes
+    public void onSensorChanged(SensorEvent event) {
         Log.i(TAG, "onSensorChanged");
 
         float x = event.values[0];

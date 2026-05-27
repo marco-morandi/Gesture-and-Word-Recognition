@@ -1,6 +1,8 @@
 package com.marco.iot.gesture_word_recognition;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -20,6 +22,9 @@ import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity implements INewDataAvailable {
 
@@ -30,9 +35,17 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
 
     private ISensor accelerometer;
+    private List<Float> templateAccX = new ArrayList<>();
+    private List<Float> templateAccY = new ArrayList<>();
+    private List<Float> templateAccZ = new ArrayList<>();
+    private boolean accIsCollecting = false;
+    private Handler accHandler = new Handler(Looper.getMainLooper());
 
     private ISensor recorder;
     private final int FS = 8000;
+
+
+
     private final int RECORDING_LENGTH_IN_SEC = 3;
 
     @Override
@@ -50,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new TrainingFragment())
-
                     .commit();
         }
 
@@ -74,27 +86,55 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         getSupportFragmentManager().setFragmentResultListener("training_acc_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
+                    Log.i(TAG, "Command: " + cmd);
                     if ("start_accelerometer".equals(cmd)) {
-                        Log.i(TAG, "Command: " + cmd);
-                        // accelerometer.start();
+                        startAccelerometerDataCollection();
                     }
                 });
 
-        getSupportFragmentManager().setFragmentResultListener("start_word_recording", this, (requestKey, bundle) -> {
-            String cmd = bundle.getString("cmd");
+        getSupportFragmentManager().setFragmentResultListener("start_word_recording", this,
+                (requestKey, bundle) -> {
+                    String cmd = bundle.getString("cmd");
+                    Log.i(TAG, "Command: "+ cmd);
+                    if ("start_word_recording".equals(cmd)) {
+                        recorder.start();
+                    }
+                });
 
-            if ("start_word_recording".equals(cmd)) {
-                Log.i(TAG, "start_word_recording");
-                recorder.start();
-            }
-        });
 
+    }
+
+    private void startAccelerometerDataCollection() {
+        templateAccX.clear();
+        templateAccY.clear();
+        templateAccZ.clear();
+
+        accIsCollecting = true;
+        accelerometer.start();
+
+        accHandler.postDelayed(() -> {
+            accelerometer.stop();
+            accIsCollecting = false;
+            onAccelerometerCollectionDone();
+        }, RECORDING_LENGTH_IN_SEC * 1000L);
 
     }
 
     @Override
     public void onNewAccelerometerDataAvailable(float x, float y, float z) {
+        if(!accIsCollecting) { return; }
 
+        templateAccX.add(x);
+        templateAccY.add(y);
+        templateAccZ.add(z);
+    }
+
+    public void onAccelerometerCollectionDone() {
+        Log.i(TAG, "onAccelerometerCollectionDone");
+
+        Bundle result = new Bundle();
+        result.putString("status", "gesture_done");
+        getSupportFragmentManager().setFragmentResult("training_gesture_feedback", result);
     }
 
     @Override

@@ -50,6 +50,7 @@ public class TrainingFragment extends Fragment {
             result.putString("cmd", "start_accelerometer");
 
             getParentFragmentManager().setFragmentResult("training_acc_cmd", result);
+            tvGestureRecordDone.setText("Recording...");
         });
 
         bttTrainFragWordRec.setOnClickListener( v -> {
@@ -57,6 +58,14 @@ public class TrainingFragment extends Fragment {
             result.putString("cmd", "start_word_recording");
 
             getParentFragmentManager().setFragmentResult("start_word_recording", result);
+        });
+
+
+        getParentFragmentManager().setFragmentResultListener("training_gesture_feedback", this, (key, bundle) -> {
+            String status = bundle.getString("status");
+            Log.i(TAG, "Status: " + status);
+            if ("gesture_done".equals(status))
+                tvGestureRecordDone.setText("Gesture recorded!");
         });
 
 
