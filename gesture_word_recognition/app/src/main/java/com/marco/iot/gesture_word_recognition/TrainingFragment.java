@@ -41,6 +41,12 @@ public class TrainingFragment extends Fragment {
         tvWordRecordDone = view.findViewById(R.id.tvWordRecordDone);
         tvGestureRecordDone = view.findViewById(R.id.tvGestureRecordDone);
 
+        bttTrainFragGestureRec.setOnClickListener(v -> {
+            Bundle result = new Bundle();
+            result.putString("cmd", "start_accelerometer");
+
+            getParentFragmentManager().setFragmentResult("training_acc_cmd", result);
+        });
 
     }
 
