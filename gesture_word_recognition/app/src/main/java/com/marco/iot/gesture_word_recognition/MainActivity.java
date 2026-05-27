@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private TextView tvResult;
 
     private float[] wordTemplate;
+    private float[] wordSample;
+
+    private String mode = "training";
     private ISensor accelerometer;
     private List<Float> gestureTemplateX = new ArrayList<>();
     private List<Float> gestureTemplateY = new ArrayList<>();
@@ -76,11 +79,13 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             if (!isChecked) { return; }
 
             if (checkedId == R.id.bttTraining) {
+                mode = "training";
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new TrainingFragment())
                         .addToBackStack(null)
                         .commit();
             } else if (checkedId == R.id.bttRecognition) {
+                mode = "recognition";
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new RecognitionFragment())
                         .addToBackStack(null)
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         });
 
 
-        getSupportFragmentManager().setFragmentResultListener("training_acc_cmd", this,
+        getSupportFragmentManager().setFragmentResultListener("record_gesture_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
                     Log.i(TAG, "Command: " + cmd);
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                     }
                 });
 
-        getSupportFragmentManager().setFragmentResultListener("training_word_cmd", this,
+        getSupportFragmentManager().setFragmentResultListener("record_word_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
                     Log.i(TAG, "Command: "+ cmd);
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     }
 
-    private float[] audioSampplesConvertiontoFloat(short[] input) {
+    private float[] audioSamplesConvertionToFloat(short[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
             output[i] = (float) input[i] / 32768.0f;
@@ -156,10 +161,17 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     @Override
     public void onRecordingDone(short[] audioData) {
-        wordTemplate = audioSampplesConvertiontoFloat(audioData);
-
         Bundle result = new Bundle();
         result.putString("status", "Recording finished");
-        getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
+
+        if(mode.equals("training")){
+            wordTemplate = audioSamplesConvertionToFloat(audioData);
+            getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
+        }
+        if(mode.equals("recognition")){
+            wordSample = audioSamplesConvertionToFloat(audioData);
+            getSupportFragmentManager().setFragmentResult("recognition_word_feedback", result);
+        }
+
     }
 }
