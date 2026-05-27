@@ -20,6 +20,8 @@ import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
+import java.util.Arrays;
+
 
 public class MainActivity extends AppCompatActivity implements INewDataAvailable {
 
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private MaterialButtonToggleGroup bttChooseButton;
     private TextView tvResult;
 
-
+    private float[] wordTemplate;
     private ISensor accelerometer;
 
     private ISensor recorder;
@@ -84,12 +86,19 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             String cmd = bundle.getString("cmd");
 
             if ("start_word_recording".equals(cmd)) {
-                Log.i(TAG, "start_word_recording");
                 recorder.start();
             }
         });
 
 
+    }
+
+    private float[] audioSampplesConvertiontoFloat(short[] input) {
+        float[] output = new float[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = (float) input[i] / 32768.0f;
+        }
+        return output;
     }
 
     @Override
@@ -99,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     @Override
     public void onRecordingDone(short[] audioData) {
+        wordTemplate = audioSampplesConvertiontoFloat(audioData);
 
+        Bundle result = new Bundle();
+        result.putString("status", "Recording finished");
+        getSupportFragmentManager().setFragmentResult("training_request", result);
     }
 }
