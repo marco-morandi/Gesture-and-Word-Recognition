@@ -11,9 +11,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
+
 import com.marco.iot.gesture_word_recognition.accelerometer.Accelerometer;
 import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
+
+import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
+import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
+import com.marco.iot.gesture_word_recognition.recorder.Recorder;
+
 
 public class MainActivity extends AppCompatActivity implements INewDataAvailable {
 
@@ -22,7 +28,12 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private MaterialButtonToggleGroup bttChooseButton;
     private TextView tvResult;
 
+
     private ISensor accelerometer;
+
+    private ISensor recorder;
+    private final int FS = 8000;
+    private final int RECORDING_LENGTH_IN_SEC = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         tvResult = findViewById(R.id.tv_result);
 
         accelerometer = new Accelerometer(this);
+
+        recorder = new Recorder(this, FS, RECORDING_LENGTH_IN_SEC);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -57,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             }
         });
 
+
         getSupportFragmentManager().setFragmentResultListener("training_acc_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
@@ -65,6 +79,16 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                         // accelerometer.start();
                     }
                 });
+
+        getSupportFragmentManager().setFragmentResultListener("start_word_recording", this, (requestKey, bundle) -> {
+            String cmd = bundle.getString("cmd");
+
+            if ("start_word_recording".equals(cmd)) {
+                Log.i(TAG, "start_word_recording");
+                recorder.start();
+            }
+        });
+
 
     }
 

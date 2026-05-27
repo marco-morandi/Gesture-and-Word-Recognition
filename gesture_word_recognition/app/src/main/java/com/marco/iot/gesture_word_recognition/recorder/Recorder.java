@@ -13,8 +13,9 @@ import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
 import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
+import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
-public class Recorder {
+public class Recorder implements ISensor {
     private final String TAG = "Recorder";
 
     private int fsInHz;

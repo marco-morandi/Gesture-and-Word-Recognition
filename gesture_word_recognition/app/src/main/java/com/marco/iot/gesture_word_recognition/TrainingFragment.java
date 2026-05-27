@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
+import com.marco.iot.gesture_word_recognition.recorder.Recorder;
+
 public class TrainingFragment extends Fragment {
     private final String TAG = "TrainingFragment";
     private Button bttTrainFragWordRec, bttTrainFragGestureRec;
@@ -41,12 +44,22 @@ public class TrainingFragment extends Fragment {
         tvWordRecordDone = view.findViewById(R.id.tvWordRecordDone);
         tvGestureRecordDone = view.findViewById(R.id.tvGestureRecordDone);
 
+<<<<<<< HEAD
         bttTrainFragGestureRec.setOnClickListener(v -> {
             Bundle result = new Bundle();
             result.putString("cmd", "start_accelerometer");
 
             getParentFragmentManager().setFragmentResult("training_acc_cmd", result);
         });
+=======
+        bttTrainFragWordRec.setOnClickListener( v -> {
+            Bundle result = new Bundle();
+            result.putString("cmd", "start_word_recording");
+
+            getParentFragmentManager().setFragmentResult("start_word_recording", result);
+        });
+
+>>>>>>> c8df9a0574db58c1f09475a57253668b7ab82379
 
     }
 
