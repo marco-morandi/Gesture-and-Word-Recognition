@@ -40,7 +40,7 @@ public class RecognitionFragment extends Fragment {
             Bundle result = new Bundle();
             result.putString("cmd", "start_accelerometer");
 
-            getParentFragmentManager().setFragmentResult("recognition_acc_cmd", result);
+            getParentFragmentManager().setFragmentResult("record_gesture_cmd", result);
             tvGestureRecogDone.setText("Recording...");
         });
 

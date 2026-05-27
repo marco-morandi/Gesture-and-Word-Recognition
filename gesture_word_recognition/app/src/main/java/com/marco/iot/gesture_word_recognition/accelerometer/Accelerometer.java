@@ -11,7 +11,7 @@ import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
 public class Accelerometer implements ISensor, SensorEventListener {
-    private final String TAG = "MyAccelerometer";
+    private final String TAG = "Accelerometer";
 
     private SensorManager sensorManager = null;
     private Sensor sensor = null;

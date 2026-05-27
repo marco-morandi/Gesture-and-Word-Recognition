@@ -6,11 +6,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
 
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
@@ -31,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     private final String TAG = "MainActivity";
 
+    private String mode = "training";
+
     private MaterialButtonToggleGroup bttChooseButton;
     private TextView tvResult;
 
@@ -39,10 +39,10 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     private List<Float> gestureTemplateX = new ArrayList<>();
     private List<Float> gestureTemplateY = new ArrayList<>();
     private List<Float> gestureTemplateZ = new ArrayList<>();
-    private boolean isRecordingGesture = false;
     private List<Float> gestureSampleX = new ArrayList<>();
     private List<Float> gestureSampleY = new ArrayList<>();
     private List<Float> gestureSampleZ = new ArrayList<>();
+    private boolean isRecordingGesture = false;
 
 
     private Handler accHandler = new Handler(Looper.getMainLooper());
@@ -76,11 +76,13 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
             if (!isChecked) { return; }
 
             if (checkedId == R.id.bttTraining) {
+                mode = "training";
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new TrainingFragment())
                         .addToBackStack(null)
                         .commit();
             } else if (checkedId == R.id.bttRecognition) {
+                mode = "recognition";
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new RecognitionFragment())
                         .addToBackStack(null)
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         });
 
 
-        getSupportFragmentManager().setFragmentResultListener("training_acc_cmd", this,
+        getSupportFragmentManager().setFragmentResultListener("record_gesture_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
                     Log.i(TAG, "Command: " + cmd);
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                     }
                 });
 
-        getSupportFragmentManager().setFragmentResultListener("training_word_cmd", this,
+        getSupportFragmentManager().setFragmentResultListener("record_word_cmd", this,
                 (requestKey, bundle) -> {
                     String cmd = bundle.getString("cmd");
                     Log.i(TAG, "Command: "+ cmd);
@@ -107,16 +109,15 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
                     }
                 });
 
-
-
-
-
     }
 
     private void startAccelerometerDataCollection() {
         gestureTemplateX.clear();
         gestureTemplateY.clear();
         gestureTemplateZ.clear();
+        gestureSampleX.clear();
+        gestureSampleY.clear();
+        gestureSampleZ.clear();
 
         isRecordingGesture = true;
         accelerometer.start();
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
     }
 
-    private float[] audioSampplesConvertiontoFloat(short[] input) {
+    private float[] audioSamplesConvertionToFloat(short[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
             output[i] = (float) input[i] / 32768.0f;
@@ -141,9 +142,17 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
     public void onNewAccelerometerDataAvailable(float x, float y, float z) {
         if(!isRecordingGesture) { return; }
 
-        gestureTemplateX.add(x);
-        gestureTemplateY.add(y);
-        gestureTemplateZ.add(z);
+        if (mode.equals("training")) {
+            gestureTemplateX.add(x);
+            gestureTemplateY.add(y);
+            gestureTemplateZ.add(z);
+        }
+        else if (mode.equals("recognition")) {
+            gestureSampleX.add(x);
+            gestureSampleY.add(y);
+            gestureSampleZ.add(z);
+        }
+
     }
 
     public void onAccelerometerCollectionDone() {
@@ -151,12 +160,15 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
 
         Bundle result = new Bundle();
         result.putString("status", "gesture_done");
-        getSupportFragmentManager().setFragmentResult("training_gesture_feedback", result);
+        if (mode.equals("training"))
+            getSupportFragmentManager().setFragmentResult("training_gesture_feedback", result);
+        else if (mode.equals("recognition"))
+            getSupportFragmentManager().setFragmentResult("recognition_gesture_feedback", result);
     }
 
     @Override
     public void onRecordingDone(short[] audioData) {
-        wordTemplate = audioSampplesConvertiontoFloat(audioData);
+        wordTemplate = audioSamplesConvertionToFloat(audioData);
 
         Bundle result = new Bundle();
         result.putString("status", "Recording finished");

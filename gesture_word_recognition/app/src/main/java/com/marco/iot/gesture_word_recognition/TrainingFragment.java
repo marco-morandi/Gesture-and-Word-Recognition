@@ -49,7 +49,7 @@ public class TrainingFragment extends Fragment {
             Bundle result = new Bundle();
             result.putString("cmd", "start_accelerometer");
 
-            getParentFragmentManager().setFragmentResult("training_acc_cmd", result);
+            getParentFragmentManager().setFragmentResult("record_gesture_cmd", result);
             tvGestureRecordDone.setText("Recording...");
         });
 
