@@ -47,18 +47,97 @@
 
     </LinearLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"/>
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/tv_result"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start word recognition"
+            android:textSize="20dp"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"/>
+
+
+        <Button
+            android:id="@+id/bttStartWordRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start!"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/tvWordRecDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start gesture recognition"
+            android:textSize="20dp"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"/>
+
+
+        <Button
+            android:id="@+id/bttStartGestureRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start!"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/tvGestureRecDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="1">
+        <Button
+            android:id="@+id/bttAuthenticate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Authenticate!"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
 </LinearLayout>

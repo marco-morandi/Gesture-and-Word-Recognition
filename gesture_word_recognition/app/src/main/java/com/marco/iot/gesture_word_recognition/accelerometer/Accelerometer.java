@@ -7,8 +7,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
+import com.marco.iot.gesture_word_recognition.data.GestureData;
+import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Accelerometer implements ISensor, SensorEventListener {
     private final String TAG = "Accelerometer";
@@ -16,7 +20,9 @@ public class Accelerometer implements ISensor, SensorEventListener {
     private SensorManager sensorManager = null;
     private Sensor sensor = null;
 
-    private INewDataAvailable newDataAvailable = null;
+    private IAccelerometer iAccelerometer = null;
+
+    private List<Float> xValues, yValues, zValues;
 
 
     public Accelerometer(Context context) {
@@ -27,17 +33,20 @@ public class Accelerometer implements ISensor, SensorEventListener {
         else
             Log.e(TAG, "Sensor not found");
 
-        this.newDataAvailable = (INewDataAvailable) context;
+        this.iAccelerometer = (IAccelerometer) context;
     }
 
     public void start() {
+        xValues = new ArrayList<>();
+        yValues = new ArrayList<>();
+        zValues = new ArrayList<>();
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-
     }
 
     public void stop() {
         sensorManager.unregisterListener(this);
-
+        GestureData gestureData = new GestureData(xValues, yValues, zValues);
+        iAccelerometer.onRecordingDone(gestureData);
     }
 
     @Override
@@ -52,7 +61,8 @@ public class Accelerometer implements ISensor, SensorEventListener {
         float z = event.values[2];
 
         Log.i(TAG, "X: " + x + " Y: " + y + " Z: " + z);
-
-        newDataAvailable.onNewAccelerometerDataAvailable(x, y, z);
+        xValues.add(x);
+        yValues.add(y);
+        zValues.add(z);
     }
 }

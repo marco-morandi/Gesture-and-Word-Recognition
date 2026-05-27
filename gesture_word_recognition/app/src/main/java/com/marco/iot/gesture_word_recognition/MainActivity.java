@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -13,11 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import com.marco.iot.gesture_word_recognition.accelerometer.Accelerometer;
-import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
+import com.marco.iot.gesture_word_recognition.accessManager.AccessChecker;
+import com.marco.iot.gesture_word_recognition.data.GestureData;
+import com.marco.iot.gesture_word_recognition.data.WordData;
+import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
+import com.marco.iot.gesture_word_recognition.interfaces.IRecorder;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
-import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
-import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
 
@@ -25,35 +28,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements INewDataAvailable {
+public class MainActivity extends AppCompatActivity implements IAccelerometer, IRecorder {
 
     private final String TAG = "MainActivity";
 
     private String mode = "training";
 
-    private MaterialButtonToggleGroup bttChooseButton;
-    private TextView tvResult;
+    private AccessChecker accessChecker;
 
-    private float[] wordTemplate;
-    private float[] wordSample;
+    private Button bttStartWordRec, bttStartGestureRec, bttAuthenticate;
+    private MaterialButtonToggleGroup bttChooseButton;
+    private TextView tvResult, tvWordRecDone, tvGestureRecDone;
+
+    private GestureData sampleGesture;
+    private GestureData templateGesture;
+
+    private WordData sampleWord;
+    private WordData templateWord;
 
     private ISensor accelerometer;
-    private List<Float> gestureTemplateX = new ArrayList<>();
-    private List<Float> gestureTemplateY = new ArrayList<>();
-    private List<Float> gestureTemplateZ = new ArrayList<>();
-    private List<Float> gestureSampleX = new ArrayList<>();
-    private List<Float> gestureSampleY = new ArrayList<>();
-    private List<Float> gestureSampleZ = new ArrayList<>();
-    private boolean isRecordingGesture = false;
+    private ISensor recorder;
 
+    private boolean isRecordingGesture = false;
 
     private Handler accHandler = new Handler(Looper.getMainLooper());
 
-    private ISensor recorder;
-    private final int FS = 8000;
 
-
-
+    private final int FS = 6000;
     private final int RECORDING_LENGTH_IN_SEC = 3;
 
     @Override
@@ -64,127 +65,87 @@ public class MainActivity extends AppCompatActivity implements INewDataAvailable
         bttChooseButton = findViewById(R.id.bttChooseButton);
         tvResult = findViewById(R.id.tv_result);
 
-        accelerometer = new Accelerometer(this);
+        bttStartGestureRec = findViewById(R.id.bttStartGestureRec);
+        bttStartWordRec = findViewById(R.id.bttStartWordRec);
+        bttAuthenticate = findViewById(R.id.bttAuthenticate);
 
+        tvWordRecDone = findViewById(R.id.tvWordRecDone);
+        tvGestureRecDone = findViewById(R.id.tvGestureRecDone);
+
+        accelerometer = new Accelerometer(this);
         recorder = new Recorder(this, FS, RECORDING_LENGTH_IN_SEC);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new TrainingFragment())
-                    .commit();
-        }
 
         bttChooseButton.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) { return; }
 
             if (checkedId == R.id.bttTraining) {
+                tvWordRecDone.setText("");
+                tvGestureRecDone.setText("");
                 mode = "training";
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new TrainingFragment())
-                        .addToBackStack(null)
-                        .commit();
+
             } else if (checkedId == R.id.bttRecognition) {
+                tvWordRecDone.setText("");
+                tvGestureRecDone.setText("");
                 mode = "recognition";
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new RecognitionFragment())
-                        .addToBackStack(null)
-                        .commit();
             }
         });
+        bttStartGestureRec.setOnClickListener(v->{
+            startGestureRecording();
+        });
 
+        bttStartWordRec.setOnClickListener(v->{
+            startWordRecording();
+        });
 
-        getSupportFragmentManager().setFragmentResultListener("record_gesture_cmd", this,
-                (requestKey, bundle) -> {
-                    String cmd = bundle.getString("cmd");
-                    Log.i(TAG, "Command: " + cmd);
-                    if ("start_accelerometer".equals(cmd)) {
-                        startAccelerometerDataCollection();
-                    }
-                });
+        accessChecker = new AccessChecker();
 
-        getSupportFragmentManager().setFragmentResultListener("record_word_cmd", this,
-                (requestKey, bundle) -> {
-                    String cmd = bundle.getString("cmd");
-                    Log.i(TAG, "Command: "+ cmd);
-                    if ("start_word_recording".equals(cmd)) {
-                        recorder.start();
-                    }
-                });
-
-
-
-
-
+        bttAuthenticate.setOnClickListener(v->{
+            boolean authenticate = accessChecker.authenticate(templateWord, sampleWord, templateGesture, sampleGesture);
+            if(authenticate){
+                tvResult.setText("Access granted!");
+            }
+            else{
+                tvResult.setText("Access denied!");
+            }
+        });
     }
 
-    private void startAccelerometerDataCollection() {
-        gestureTemplateX.clear();
-        gestureTemplateY.clear();
-        gestureTemplateZ.clear();
-        gestureSampleX.clear();
-        gestureSampleY.clear();
-        gestureSampleZ.clear();
 
+    private void startGestureRecording() {
         isRecordingGesture = true;
         accelerometer.start();
 
         accHandler.postDelayed(() -> {
             accelerometer.stop();
             isRecordingGesture = false;
-            onAccelerometerCollectionDone();
         }, RECORDING_LENGTH_IN_SEC * 1000L);
 
     }
 
-    private float[] audioSamplesConvertionToFloat(short[] input) {
-        float[] output = new float[input.length];
-        for (int i = 0; i < input.length; i++) {
-            output[i] = (float) input[i] / 32768.0f;
-        }
-        return output;
+    private void startWordRecording(){
+        recorder.start();
     }
 
     @Override
-    public void onNewAccelerometerDataAvailable(float x, float y, float z) {
-        if(!isRecordingGesture) { return; }
-
+    public void onRecordingDone(GestureData data) {
         if (mode.equals("training")) {
-            gestureTemplateX.add(x);
-            gestureTemplateY.add(y);
-            gestureTemplateZ.add(z);
+            templateGesture = data;
         }
         if (mode.equals("recognition")) {
-            gestureSampleX.add(x);
-            gestureSampleY.add(y);
-            gestureSampleZ.add(z);
+            sampleGesture = data;
         }
-
-    }
-
-    public void onAccelerometerCollectionDone() {
-        Log.i(TAG, "onAccelerometerCollectionDone");
-
-        Bundle result = new Bundle();
-        result.putString("status", "gesture_done");
-        if (mode.equals("training"))
-            getSupportFragmentManager().setFragmentResult("training_gesture_feedback", result);
-        if (mode.equals("recognition"))
-            getSupportFragmentManager().setFragmentResult("recognition_gesture_feedback", result);
+        tvGestureRecDone.setText("Gesture recorded!");
     }
 
     @Override
-    public void onRecordingDone(short[] audioData) {
-        Bundle result = new Bundle();
-        result.putString("status", "Recording finished");
-
-        if(mode.equals("training")){
-            wordTemplate = audioSamplesConvertionToFloat(audioData);
-            getSupportFragmentManager().setFragmentResult("training_word_feedback", result);
+    public void onRecordingDone(WordData data) {
+        if (mode.equals("training")) {
+            templateWord = data;
         }
-        if(mode.equals("recognition")){
-            wordSample = audioSamplesConvertionToFloat(audioData);
-            getSupportFragmentManager().setFragmentResult("recognition_word_feedback", result);
+        if (mode.equals("recognition")) {
+            sampleWord = data;
         }
-
+        tvWordRecDone.setText("Word recorded!");
     }
 }

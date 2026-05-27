@@ -12,7 +12,9 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import com.marco.iot.gesture_word_recognition.interfaces.INewDataAvailable;
+import com.marco.iot.gesture_word_recognition.data.WordData;
+import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
+import com.marco.iot.gesture_word_recognition.interfaces.IRecorder;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
 public class Recorder implements ISensor {
@@ -27,7 +29,7 @@ public class Recorder implements ISensor {
     private AudioRecord audioRecord = null;
 
     private Context context;
-    private INewDataAvailable iRecording;
+    private IRecorder iRecorder;
 
 
     public Recorder(Context context, int fsInHz, int recordingLengthInSec) {
@@ -39,7 +41,7 @@ public class Recorder implements ISensor {
         this.nSamples = fsInHz * this.recordingLengthInSec;
 
         this.context = context;
-        iRecording = (INewDataAvailable) context;
+        iRecorder = (IRecorder) context;
     }
 
     public void start() {
@@ -48,9 +50,11 @@ public class Recorder implements ISensor {
             initRecorder();
             doRecording();
             releaseRecorder();
+            float[] audioDataToFloat = audioSamplesConvertionToFloat(audioData);
+            WordData wordData = new WordData(audioDataToFloat, fsInHz);
 
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(() -> iRecording.onRecordingDone(audioData));
+            handler.post(() -> iRecorder.onRecordingDone(wordData));
 
         }).start();
     }
@@ -82,6 +86,14 @@ public class Recorder implements ISensor {
         audioRecord.read(audioData, 0, nSamples);
 
         Log.i(TAG, "Recording done!");
+    }
+
+    private float[] audioSamplesConvertionToFloat(short[] input) {
+        float[] output = new float[input.length];
+        for (int i = 0; i < input.length; i++) {
+            output[i] = (float) input[i] / 32768.0f;
+        }
+        return output;
     }
 
 }
