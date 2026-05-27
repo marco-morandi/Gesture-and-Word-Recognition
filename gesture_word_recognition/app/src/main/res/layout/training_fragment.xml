@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="vertical"
@@ -6,56 +8,76 @@
     android:gravity="center_horizontal"
     android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start word recording"
-        android:textSize="20dp"
-        android:gravity="center_horizontal"
-        android:textStyle="bold"
-        android:layout_marginTop="200dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start word recording"
+            android:textSize="20dp"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"/>
 
 
-    <Button
-        android:id="@+id/bttTrainFragWordRec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start!"
-        android:layout_marginTop="10dp"/>
+        <Button
+            android:id="@+id/bttTrainFragWordRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start!"
+            android:layout_marginTop="10dp"/>
 
-    <TextView
-        android:id="@+id/tvWordRecordDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        />
+        <TextView
+            android:id="@+id/tvWordRecordDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
 
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start gesture recording"
-        android:textSize="20dp"
-        android:gravity="center_horizontal"
-        android:textStyle="bold"
-        android:layout_marginTop="200dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start gesture recording"
+            android:textSize="20dp"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"/>
 
 
-    <Button
-        android:id="@+id/bttTrainFragGestureRec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start!"
-        android:layout_marginTop="10dp"/>
+        <Button
+            android:id="@+id/bttTrainFragGestureRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start!"
+            android:layout_marginTop="10dp"/>
 
-    <TextView
-        android:id="@+id/tvGestureRecordDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        />
+        <TextView
+            android:id="@+id/tvGestureRecordDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            />
+
+    </LinearLayout>
+
+
 </LinearLayout>
+
+
+
+
