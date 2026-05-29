@@ -91,14 +91,16 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             }
         });
         bttStartGestureRec.setOnClickListener(v->{
-            tvWordRecDone.setText("");
             tvGestureRecDone.setText("");
+            tvGestureRecDone.setText("Recording gesture...");
+            tvResult.setText("");
             startGestureRecording();
         });
 
         bttStartWordRec.setOnClickListener(v->{
             tvWordRecDone.setText("");
-            tvGestureRecDone.setText("");
+            tvWordRecDone.setText("Recording word...");
+            tvResult.setText("");
             startWordRecording();
         });
 
@@ -156,6 +158,10 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             sampleGesture = data;
         }
         tvGestureRecDone.setText("Gesture recorded!");
+
+        accHandler.postDelayed(() -> {
+            tvGestureRecDone.setText("");
+        }, 3000);
     }
 
     @Override
@@ -167,6 +173,10 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             sampleWord = data;
         }
         tvWordRecDone.setText("Word recorded!");
+
+        accHandler.postDelayed(() -> {
+            tvWordRecDone.setText("");
+        }, 3000);
     }
 
     private float[] downsample(float[] data, int factor) {
