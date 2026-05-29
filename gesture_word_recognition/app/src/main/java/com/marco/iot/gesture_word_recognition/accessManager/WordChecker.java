@@ -1,13 +1,15 @@
 package com.marco.iot.gesture_word_recognition.accessManager;
 
+import android.util.Log;
+
 import com.marco.iot.gesture_word_recognition.DTW;
 import com.marco.iot.gesture_word_recognition.data.WordData;
 
 public class WordChecker {
-
+    private final String TAG = "WordChecker";
     private DTW dtw;
 
-    private static final double THRESHOLD = 0.1;
+    private static final double THRESHOLD = 0.0012;
 
     public WordChecker() {
         dtw = new DTW();
@@ -20,6 +22,7 @@ public class WordChecker {
 
         double distance =
                 dtw.compute(template.getSamples(), sample.getSamples()).getDistance();
+        Log.i(TAG, "DISTANCE_WORD = " + distance);
 
         return distance < THRESHOLD;
     }
