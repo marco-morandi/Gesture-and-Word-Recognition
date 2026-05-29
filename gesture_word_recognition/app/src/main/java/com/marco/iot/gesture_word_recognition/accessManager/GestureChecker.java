@@ -7,7 +7,7 @@ public class GestureChecker {
 
     private DTW dtw;
 
-    private static final double THRESHOLD = 500;
+    private static final double THRESHOLD = 0.1;
 
     public GestureChecker() {
         dtw = new DTW();

@@ -7,7 +7,7 @@ public class WordChecker {
 
     private DTW dtw;
 
-    private static final double THRESHOLD = 1000;
+    private static final double THRESHOLD = 0.1;
 
     public WordChecker() {
         dtw = new DTW();

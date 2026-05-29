@@ -50,7 +50,7 @@ public class Recorder implements ISensor {
             initRecorder();
             doRecording();
             releaseRecorder();
-            float[] audioDataToFloat = audioSamplesConvertionToFloat(audioData);
+            float[] audioDataToFloat = audioSamplesConversionToFloat(audioData);
             WordData wordData = new WordData(audioDataToFloat, fsInHz);
 
             Handler handler = new Handler(Looper.getMainLooper());
@@ -88,7 +88,7 @@ public class Recorder implements ISensor {
         Log.i(TAG, "Recording done!");
     }
 
-    private float[] audioSamplesConvertionToFloat(short[] input) {
+    private float[] audioSamplesConversionToFloat(short[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
             output[i] = (float) input[i] / 32768.0f;

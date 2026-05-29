@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
     private Handler accHandler = new Handler(Looper.getMainLooper());
 
 
-    private final int FS = 6000;
+    private final int FS = 8000;
     private final int RECORDING_LENGTH_IN_SEC = 3;
 
     @Override
@@ -101,13 +101,29 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         accessChecker = new AccessChecker();
 
         bttAuthenticate.setOnClickListener(v->{
-            boolean authenticate = accessChecker.authenticate(templateWord, sampleWord, templateGesture, sampleGesture);
-            if(authenticate){
-                tvResult.setText("Access granted!");
-            }
-            else{
-                tvResult.setText("Access denied!");
-            }
+            Log.i(TAG, "Authenticate button clicked");
+            new Thread( () -> {
+                Log.i(TAG, "Thread started...");
+
+                if (templateWord == null || sampleWord == null || templateGesture == null || sampleGesture == null) {
+                    runOnUiThread(() -> tvResult.setText("Error: DATA MISSING!"));
+                    return;
+                }
+
+                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 2000 Hz così da evitare crash di DTW.
+                WordData sampleWordDownSampled = new WordData(downsample(sampleWord.getSamples(), 8), sampleWord.getSampleRate()/8);
+                WordData templateWordDownSampled = new WordData(downsample(templateWord.getSamples(), 8), templateWord.getSampleRate()/8);
+
+                boolean authenticate = accessChecker.authenticate(templateWordDownSampled, sampleWordDownSampled, templateGesture, sampleGesture);
+                runOnUiThread(() -> {
+                    if(authenticate){
+                        tvResult.setText("Access granted!");
+                    }
+                    else {
+                        tvResult.setText("Access denied!");
+                    }
+                });
+            }).start();
         });
     }
 
@@ -147,5 +163,14 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             sampleWord = data;
         }
         tvWordRecDone.setText("Word recorded!");
+    }
+
+    private float[] downsample(float[] data, int factor) {
+        if (data == null) return null;
+        float[] result = new float[data.length / factor];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = data[i * factor];
+        }
+        return result;
     }
 }
