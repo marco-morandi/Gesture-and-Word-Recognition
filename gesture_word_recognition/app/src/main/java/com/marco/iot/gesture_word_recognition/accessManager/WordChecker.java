@@ -20,11 +20,16 @@ public class WordChecker {
             WordData sample
     ) {
 
-        double distance =
-                dtw.compute(template.getSamples(), sample.getSamples()).getDistance();
-        Log.i(TAG, "DISTANCE_WORD = " + distance);
+        float[] tAudio = normalizeAmplitude(template.getSamples());
+        float[] sAudio = normalizeAmplitude(sample.getSamples());
 
-        return distance < THRESHOLD;
+        double rawDistance = dtw.compute(tAudio, sAudio).getDistance();
+
+        double normalizedDistance = rawDistance / (tAudio.length + sAudio.length);
+
+        Log.i(TAG, "AUDIO_NORM_DISTANCE = " + normalizedDistance);
+
+        return normalizedDistance < THRESHOLD;
     }
 
     private float[] shortToFloat(short[] data) {
@@ -36,5 +41,24 @@ public class WordChecker {
         }
 
         return result;
+    }
+
+    private float[] normalizeAmplitude(float[] data) {
+        if (data == null || data.length == 0) return data;
+
+        float sum = 0;
+        for (float v : data) sum += v;
+        float mean = sum / data.length;
+
+        float sqSum = 0;
+        for (float v : data) sqSum += (float) Math.pow(v - mean, 2);
+        float stdDev = (float) Math.sqrt(sqSum / data.length);
+
+        float[] normalized = new float[data.length];
+        // remove silence bias and normalize amplitude
+        for (int i = 0; i < data.length; i++) {
+            normalized[i] = (stdDev > 0.00001f) ? (data[i] - mean) / stdDev : 0f;
+        }
+        return normalized;
     }
 }
