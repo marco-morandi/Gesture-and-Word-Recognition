@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
     private boolean isRecordingGesture = false;
 
     private Handler accHandler = new Handler(Looper.getMainLooper());
+    private Handler recHandler = new Handler(Looper.getMainLooper());
 
 
     private final int FS = 8000;
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         }
         tvWordRecDone.setText("Word recorded!");
 
-        accHandler.postDelayed(() -> {
+        recHandler.postDelayed(() -> {
             tvWordRecDone.setText("");
         }, 3000);
     }
