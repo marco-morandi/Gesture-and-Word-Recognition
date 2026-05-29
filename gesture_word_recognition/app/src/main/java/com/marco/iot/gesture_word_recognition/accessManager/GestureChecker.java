@@ -9,9 +9,9 @@ public class GestureChecker {
     private final String TAG = "GestureChecker";
     private DTW dtw;
 
-    private static final double THRESHOLD_X = 0.20;
-    private static final double THRESHOLD_Y = 0.20;
-    private static final double THRESHOLD_Z = 0.20;
+    private static final double THRESHOLD_X = 0.02;
+    private static final double THRESHOLD_Y = 0.02;
+    private static final double THRESHOLD_Z = 0.02;
 
     public GestureChecker() {
         dtw = new DTW();

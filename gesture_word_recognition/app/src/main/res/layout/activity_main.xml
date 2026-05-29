@@ -57,7 +57,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start word recognition"
+            android:text="Start word recording"
             android:textSize="20dp"
             android:gravity="center_horizontal"
             android:textStyle="bold"/>
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start gesture recognition"
+            android:text="Start gesture recording"
             android:textSize="20dp"
             android:gravity="center_horizontal"
             android:textStyle="bold"/>

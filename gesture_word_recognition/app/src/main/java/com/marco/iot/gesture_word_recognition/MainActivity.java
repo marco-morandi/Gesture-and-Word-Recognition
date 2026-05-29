@@ -91,10 +91,14 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             }
         });
         bttStartGestureRec.setOnClickListener(v->{
+            tvWordRecDone.setText("");
+            tvGestureRecDone.setText("");
             startGestureRecording();
         });
 
         bttStartWordRec.setOnClickListener(v->{
+            tvWordRecDone.setText("");
+            tvGestureRecDone.setText("");
             startWordRecording();
         });
 
