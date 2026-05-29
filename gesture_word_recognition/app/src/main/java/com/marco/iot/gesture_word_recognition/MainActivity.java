@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
     private boolean isRecordingGesture = false;
 
     private Handler accHandler = new Handler(Looper.getMainLooper());
+    private Handler recHandler = new Handler(Looper.getMainLooper());
 
 
     private final int FS = 8000;
@@ -91,10 +92,16 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             }
         });
         bttStartGestureRec.setOnClickListener(v->{
+            tvGestureRecDone.setText("");
+            tvGestureRecDone.setText("Recording gesture...");
+            tvResult.setText("");
             startGestureRecording();
         });
 
         bttStartWordRec.setOnClickListener(v->{
+            tvWordRecDone.setText("");
+            tvWordRecDone.setText("Recording word...");
+            tvResult.setText("");
             startWordRecording();
         });
 
@@ -110,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
                     return;
                 }
 
-                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 2000 Hz così da evitare crash di DTW.
+                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 1000 Hz così da evitare crash di DTW.
                 WordData sampleWordDownSampled = new WordData(downsample(sampleWord.getSamples(), 8), sampleWord.getSampleRate()/8);
                 WordData templateWordDownSampled = new WordData(downsample(templateWord.getSamples(), 8), templateWord.getSampleRate()/8);
 
@@ -152,6 +159,10 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             sampleGesture = data;
         }
         tvGestureRecDone.setText("Gesture recorded!");
+
+        accHandler.postDelayed(() -> {
+            tvGestureRecDone.setText("");
+        }, 3000);
     }
 
     @Override
@@ -163,6 +174,10 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
             sampleWord = data;
         }
         tvWordRecDone.setText("Word recorded!");
+
+        recHandler.postDelayed(() -> {
+            tvWordRecDone.setText("");
+        }, 3000);
     }
 
     private float[] downsample(float[] data, int factor) {
