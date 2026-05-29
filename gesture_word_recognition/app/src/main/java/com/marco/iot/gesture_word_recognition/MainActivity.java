@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
                     return;
                 }
 
-                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 2000 Hz così da evitare crash di DTW.
+                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 1000 Hz così da evitare crash di DTW.
                 WordData sampleWordDownSampled = new WordData(downsample(sampleWord.getSamples(), 8), sampleWord.getSampleRate()/8);
                 WordData templateWordDownSampled = new WordData(downsample(templateWord.getSamples(), 8), templateWord.getSampleRate()/8);
 
