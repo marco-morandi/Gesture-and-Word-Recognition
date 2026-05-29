@@ -9,7 +9,9 @@ public class GestureChecker {
     private final String TAG = "GestureChecker";
     private DTW dtw;
 
-    private static final double THRESHOLD = 0.3;
+    private static final double THRESHOLD_X = 1.119;
+    private static final double THRESHOLD_Y = 0.71164;
+    private static final double THRESHOLD_Z = 1.496996;
 
     public GestureChecker() {
         dtw = new DTW();
@@ -33,9 +35,9 @@ public class GestureChecker {
                 dtw.compute(toArray(template.getZValues()), toArray(sample.getZValues())).getDistance();
         Log.i(TAG, "DISTANCE_GESTURE_Z = " + dz);
 
-        return dx < THRESHOLD
-                && dy < THRESHOLD
-                && dz < THRESHOLD;
+        return dx < THRESHOLD_X
+                && dy < THRESHOLD_Y
+                && dz < THRESHOLD_Z;
     }
 
     private float[] toArray(
