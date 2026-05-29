@@ -13,9 +13,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gesture-Word Recognition"
-        android:textSize="20dp"
+        android:textSize="27dp"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         />
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,17 +31,25 @@
             app:singleSelection="true"
             app:selectionRequired="true">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/bttTraining"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:text="Training"/>
+                android:layout_height="60dp"
+                android:text="Training"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:textColor="@android:color/black"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/bttRecognition"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:text="Recognition"/>
+                android:layout_height="60dp"
+                android:text="Recognition"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="2dp"
+                android:textColor="@android:color/black"/>
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

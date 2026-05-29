@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
 
     private final String TAG = "MainActivity";
 
-    private String mode = "training";
+    private String mode;
 
     private AccessChecker accessChecker;
 
@@ -80,17 +80,21 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         bttChooseButton.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) { return; }
 
+            tvWordRecDone.setText("");
+            tvGestureRecDone.setText("");
+            tvResult.setText("");
+
             if (checkedId == R.id.bttTraining) {
-                tvWordRecDone.setText("");
-                tvGestureRecDone.setText("");
                 mode = "training";
 
             } else if (checkedId == R.id.bttRecognition) {
-                tvWordRecDone.setText("");
-                tvGestureRecDone.setText("");
                 mode = "recognition";
             }
         });
+
+        // better to automatically check one of the button (this trigger the event listener)
+        bttChooseButton.check(R.id.bttTraining);
+
         bttStartGestureRec.setOnClickListener(v->{
             tvGestureRecDone.setText("");
             tvGestureRecDone.setText("Recording gesture...");
