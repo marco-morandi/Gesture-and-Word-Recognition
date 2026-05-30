@@ -9,7 +9,7 @@ public class WordChecker {
     private final String TAG = "WordChecker";
     private DTW dtw;
 
-    private static final double THRESHOLD = 4.7e-5;
+    private static final double THRESHOLD = 1.0e-4;
 
     public WordChecker() {
         dtw = new DTW();

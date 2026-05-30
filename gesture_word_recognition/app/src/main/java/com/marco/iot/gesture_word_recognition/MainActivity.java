@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
 
 
     private final int FS = 8000;
-    private final int RECORDING_LENGTH_IN_SEC = 3;
+    private final int RECORDING_LENGTH_IN_SEC = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

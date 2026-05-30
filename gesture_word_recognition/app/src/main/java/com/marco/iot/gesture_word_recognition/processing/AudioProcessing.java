@@ -1,8 +1,13 @@
 package com.marco.iot.gesture_word_recognition.processing;
 
+import android.util.Log;
+
 import java.util.Arrays;
 
 public final class AudioProcessing {
+
+    private static final String TAG = "AudioProcessing";
+
 
     private AudioProcessing() { }
 
@@ -10,10 +15,16 @@ public final class AudioProcessing {
 
         float[] processedSignal = new float[signal.length];
 
+        Log.i(TAG, "Signal length = " + signal.length);
         processedSignal = removeMean(signal);
+        Log.i(TAG, "Signal length after mean removed = " + processedSignal.length);
         processedSignal = trimSilence(processedSignal);
+        Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
         processedSignal = normalizeByMax(processedSignal);
-        processedSignal = downsample(processedSignal, 8);
+        Log.i(TAG, "Signal length after normalization = " + processedSignal.length);
+        processedSignal = downsample(processedSignal, 4);
+        Log.i(TAG, "Signal length after downsampling = " + processedSignal.length);
+
 
         return processedSignal;
     }
@@ -92,7 +103,7 @@ public final class AudioProcessing {
             );
         }
 
-        float threshold = maxAbs * 0.15f;
+        float threshold = maxAbs * 0.20f;
 
         int start = 0;
 
@@ -107,6 +118,15 @@ public final class AudioProcessing {
                 Math.abs(signal[end]) < threshold) {
             end--;
         }
+
+        // padding di 500 campioni -> a 8kHz ca 50ms -> per recuperare eventuali attacchi di parola tagliati
+        start -= 500;
+        end += 500;
+
+        Log.i(TAG, "start = " + start);
+        Log.i(TAG, "end = " + end);
+
+
 
         return Arrays.copyOfRange(
                 signal,
