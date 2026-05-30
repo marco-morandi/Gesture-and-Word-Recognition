@@ -21,11 +21,8 @@ import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
 import com.marco.iot.gesture_word_recognition.interfaces.IRecorder;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
+import com.marco.iot.gesture_word_recognition.processing.AudioProcessing;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements IAccelerometer, IRecorder {
@@ -121,11 +118,17 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
                     return;
                 }
 
-                //Sottocampionamento per passare da segnali vocali da 8000 Hz a 1000 Hz così da evitare crash di DTW.
-                WordData sampleWordDownSampled = new WordData(downsample(sampleWord.getSamples(), 8), sampleWord.getSampleRate()/8);
-                WordData templateWordDownSampled = new WordData(downsample(templateWord.getSamples(), 8), templateWord.getSampleRate()/8);
+                // audio pre processing
+                float[] templateAudio = templateWord.getSamples();
+                float[] sampleAudio = sampleWord.getSamples();
 
-                boolean authenticate = accessChecker.authenticate(templateWordDownSampled, sampleWordDownSampled, templateGesture, sampleGesture);
+                templateAudio = AudioProcessing.preProcess(templateAudio);
+                sampleAudio = AudioProcessing.preProcess(sampleAudio);
+
+                WordData templateWordPreprocessed = new WordData(templateAudio, templateWord.getSampleRate());
+                WordData sampleWordPreprocessed = new WordData(sampleAudio, sampleWord.getSampleRate());
+
+                boolean authenticate = accessChecker.authenticate(templateWordPreprocessed, sampleWordPreprocessed, templateGesture, sampleGesture);
                 runOnUiThread(() -> {
                     if(authenticate){
                         tvResult.setText("Access granted!");
@@ -184,12 +187,5 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         }, 3000);
     }
 
-    private float[] downsample(float[] data, int factor) {
-        if (data == null) return null;
-        float[] result = new float[data.length / factor];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = data[i * factor];
-        }
-        return result;
-    }
+
 }
