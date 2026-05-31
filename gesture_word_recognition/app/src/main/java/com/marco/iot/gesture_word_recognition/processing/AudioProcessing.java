@@ -103,7 +103,7 @@ public final class AudioProcessing {
             );
         }
 
-        float threshold = maxAbs * 0.20f;
+        float threshold = maxAbs * 0.10f;
 
         int start = 0;
 
@@ -120,8 +120,12 @@ public final class AudioProcessing {
         }
 
         // padding di 500 campioni -> a 8kHz ca 50ms -> per recuperare eventuali attacchi di parola tagliati
-        start -= 500;
-        end += 500;
+        if (start > 500) {
+            start -= 500;
+        }
+        if (end < signal.length - 500) {
+            end += 500;
+        }
 
         Log.i(TAG, "start = " + start);
         Log.i(TAG, "end = " + end);

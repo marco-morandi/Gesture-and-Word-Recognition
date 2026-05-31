@@ -24,6 +24,8 @@ import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 import com.marco.iot.gesture_word_recognition.processing.AudioProcessing;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity implements IAccelerometer, IRecorder {
 
@@ -127,6 +129,15 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
 
                 WordData templateWordPreprocessed = new WordData(templateAudio, templateWord.getSampleRate());
                 WordData sampleWordPreprocessed = new WordData(sampleAudio, sampleWord.getSampleRate());
+
+                // gesture pre processing
+                List<Float> templateX = templateGesture.getXValues();
+                List<Float> templateY = templateGesture.getYValues();
+                List<Float> templateZ = templateGesture.getZValues();
+
+                List<Float> sampleX = templateGesture.getXValues();
+                List<Float> sampleY = templateGesture.getYValues();
+                List<Float> sampleZ = templateGesture.getZValues();
 
                 boolean authenticate = accessChecker.authenticate(templateWordPreprocessed, sampleWordPreprocessed, templateGesture, sampleGesture);
                 runOnUiThread(() -> {
