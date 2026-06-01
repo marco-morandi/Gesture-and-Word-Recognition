@@ -1,31 +1,33 @@
 package com.marco.iot.gesture_word_recognition.data;
 
+import com.marco.iot.gesture_word_recognition.processing.AccelerometerProcessing;
+
 import java.util.List;
 
 public class GestureData {
-    private List<Float> xValues;
-    private List<Float> yValues;
-    private List<Float> zValues;
+    private float[] xValues;
+    private float[] yValues;
+    private float[] zValues;
 
     public GestureData(
-            List<Float> xValues,
-            List<Float> yValues,
-            List<Float> zValues
+            float[] xValues,
+            float[] yValues,
+            float[] zValues
     ) {
         this.xValues = xValues;
         this.yValues = yValues;
         this.zValues = zValues;
     }
 
-    public List<Float> getXValues() {
+    public float[] getXValues() {
         return xValues;
     }
 
-    public List<Float> getYValues() {
+    public float[] getYValues() {
         return yValues;
     }
 
-    public List<Float> getZValues() {
+    public float[] getZValues() {
         return zValues;
     }
 }

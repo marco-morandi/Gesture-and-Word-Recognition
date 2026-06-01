@@ -10,6 +10,7 @@ import android.util.Log;
 import com.marco.iot.gesture_word_recognition.data.GestureData;
 import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
+import com.marco.iot.gesture_word_recognition.processing.AccelerometerProcessing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,10 @@ public class Accelerometer implements ISensor, SensorEventListener {
 
     public void stop() {
         sensorManager.unregisterListener(this);
-        GestureData gestureData = new GestureData(xValues, yValues, zValues);
+        GestureData gestureData = new GestureData(
+                AccelerometerProcessing.convertFloatListToArray(xValues),
+                AccelerometerProcessing.convertFloatListToArray(yValues),
+                AccelerometerProcessing.convertFloatListToArray(zValues));
         iAccelerometer.onRecordingDone(gestureData);
     }
 

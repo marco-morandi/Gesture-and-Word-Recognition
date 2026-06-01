@@ -1,5 +1,6 @@
 package com.marco.iot.gesture_word_recognition;
 
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +22,7 @@ import com.marco.iot.gesture_word_recognition.interfaces.IAccelerometer;
 import com.marco.iot.gesture_word_recognition.interfaces.IRecorder;
 import com.marco.iot.gesture_word_recognition.interfaces.ISensor;
 
+import com.marco.iot.gesture_word_recognition.processing.AccelerometerProcessing;
 import com.marco.iot.gesture_word_recognition.processing.AudioProcessing;
 import com.marco.iot.gesture_word_recognition.recorder.Recorder;
 
@@ -53,10 +55,6 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
     private Handler accHandler = new Handler(Looper.getMainLooper());
     private Handler recHandler = new Handler(Looper.getMainLooper());
 
-
-    private final int FS = 8000;
-    private final int RECORDING_LENGTH_IN_SEC = 2;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         tvGestureRecDone = findViewById(R.id.tvGestureRecDone);
 
         accelerometer = new Accelerometer(this);
-        recorder = new Recorder(this, FS, RECORDING_LENGTH_IN_SEC);
+        recorder = new Recorder(this, Constants.FS, Constants.RECORDING_LENGTH_IN_SEC);
 
 
         bttChooseButton.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
@@ -121,25 +119,21 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
                 }
 
                 // audio pre processing
-                float[] templateAudio = templateWord.getSamples();
-                float[] sampleAudio = sampleWord.getSamples();
+                WordData templateWordPreprocessed = preProcessWord(templateWord);
+                WordData sampleWordPreprocessed = preProcessWord(sampleWord);
 
-                templateAudio = AudioProcessing.preProcess(templateAudio);
-                sampleAudio = AudioProcessing.preProcess(sampleAudio);
-
-                WordData templateWordPreprocessed = new WordData(templateAudio, templateWord.getSampleRate());
-                WordData sampleWordPreprocessed = new WordData(sampleAudio, sampleWord.getSampleRate());
 
                 // gesture pre processing
-                List<Float> templateX = templateGesture.getXValues();
-                List<Float> templateY = templateGesture.getYValues();
-                List<Float> templateZ = templateGesture.getZValues();
+                GestureData templateGesturePreprocessed = preProcessGesture(templateGesture);
+                GestureData sampleGesturePreprocessed = preProcessGesture(sampleGesture);
 
-                List<Float> sampleX = templateGesture.getXValues();
-                List<Float> sampleY = templateGesture.getYValues();
-                List<Float> sampleZ = templateGesture.getZValues();
 
-                boolean authenticate = accessChecker.authenticate(templateWordPreprocessed, sampleWordPreprocessed, templateGesture, sampleGesture);
+                boolean authenticate = accessChecker.authenticate(
+                        templateWordPreprocessed,
+                        sampleWordPreprocessed,
+                        templateGesturePreprocessed,
+                        sampleGesturePreprocessed);
+
                 runOnUiThread(() -> {
                     if(authenticate){
                         tvResult.setText("Access granted!");
@@ -159,8 +153,9 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
 
         accHandler.postDelayed(() -> {
             accelerometer.stop();
+            Log.i(TAG, "Gesture recorded!");
             isRecordingGesture = false;
-        }, RECORDING_LENGTH_IN_SEC * 1000L);
+        }, Constants.RECORDING_LENGTH_IN_SEC * 1000L);
 
     }
 
@@ -196,6 +191,19 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
         recHandler.postDelayed(() -> {
             tvWordRecDone.setText("");
         }, 3000);
+    }
+
+    GestureData preProcessGesture(GestureData gesture) {
+        float[] x = AccelerometerProcessing.preProcess(gesture.getXValues());
+        float[] y = AccelerometerProcessing.preProcess(gesture.getYValues());
+        float[] z = AccelerometerProcessing.preProcess(gesture.getZValues());
+
+        return new GestureData(x, y, z);
+    }
+
+    WordData preProcessWord(WordData word) {
+        float[] samples = AudioProcessing.preProcess(word.getSamples());
+        return new WordData(samples, word.getSampleRate()/Constants.DOWNSAMPLING_FACTOR);
     }
 
 

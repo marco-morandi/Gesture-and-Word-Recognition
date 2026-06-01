@@ -50,7 +50,7 @@ public class Recorder implements ISensor {
             initRecorder();
             doRecording();
             releaseRecorder();
-            float[] audioDataToFloat = AudioProcessing.convertToFloat(audioData);
+            float[] audioDataToFloat = AudioProcessing.convertShortToFloat(audioData);
             WordData wordData = new WordData(audioDataToFloat, fsInHz);
 
             Handler handler = new Handler(Looper.getMainLooper());

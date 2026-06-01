@@ -1,5 +1,7 @@
 package com.marco.iot.gesture_word_recognition.processing;
 
+import android.util.Log;
+
 import com.marco.iot.gesture_word_recognition.accelerometer.Accelerometer;
 
 import java.util.ArrayList;
@@ -7,10 +9,18 @@ import java.util.List;
 
 public final class AccelerometerProcessing {
 
+    private static final String TAG = "AccelerometerProcessing";
+
     private AccelerometerProcessing() { }
 
-    public static List<Float> preProcess(List<Float> signal) {
-        List<Float> processedSignal = new ArrayList<>();
+    public static float[] preProcess(float[] signal) {
+        float[] processedSignal = new float[signal.length];
+
+        //Log.i(TAG, "Signal = " + signal.toString());
+        processedSignal = removeMean(signal);
+        //Log.i(TAG, "Signal after mean removed = " + processedSignal.toString());
+        processedSignal = normalizeByMax(processedSignal);
+        //Log.i(TAG, "Signal after normalization = " + processedSignal.toString());
 
         return processedSignal;
     }
@@ -28,7 +38,7 @@ public final class AccelerometerProcessing {
         }
 
         if (maxAbs < 1e-6f) {
-            return signal.clone();
+            return signal;
         }
 
         float[] normalized = new float[signal.length];
@@ -62,4 +72,16 @@ public final class AccelerometerProcessing {
 
         return result;
     }
+
+    public static float[] convertFloatListToArray(List<Float> list) {
+
+            float[] array = new float[list.size()];
+
+            for (int i = 0; i < list.size(); i++) {
+                array[i] = list.get(i);
+            }
+
+            return array;
+    }
 }
+

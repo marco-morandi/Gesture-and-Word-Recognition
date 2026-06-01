@@ -2,6 +2,8 @@ package com.marco.iot.gesture_word_recognition.processing;
 
 import android.util.Log;
 
+import com.marco.iot.gesture_word_recognition.Constants;
+
 import java.util.Arrays;
 
 public final class AudioProcessing {
@@ -15,16 +17,15 @@ public final class AudioProcessing {
 
         float[] processedSignal = new float[signal.length];
 
-        Log.i(TAG, "Signal length = " + signal.length);
+        // Log.i(TAG, "Signal length = " + signal.length);
         processedSignal = removeMean(signal);
-        Log.i(TAG, "Signal length after mean removed = " + processedSignal.length);
+        // Log.i(TAG, "Signal length after mean removed = " + processedSignal.length);
         processedSignal = trimSilence(processedSignal);
-        Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
+        // Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
         processedSignal = normalizeByMax(processedSignal);
-        Log.i(TAG, "Signal length after normalization = " + processedSignal.length);
-        processedSignal = downsample(processedSignal, 4);
-        Log.i(TAG, "Signal length after downsampling = " + processedSignal.length);
-
+        // Log.i(TAG, "Signal length after normalization = " + processedSignal.length);
+        processedSignal = downsample(processedSignal, Constants.DOWNSAMPLING_FACTOR);
+        // Log.i(TAG, "Signal length after downsampling = " + processedSignal.length);
 
         return processedSignal;
     }
@@ -139,7 +140,7 @@ public final class AudioProcessing {
         );
     }
 
-    public static float[] convertToFloat(short[] input) {
+    public static float[] convertShortToFloat(short[] input) {
         float[] output = new float[input.length];
         for (int i = 0; i < input.length; i++) {
             output[i] = (float) input[i] / 32768.0f;
