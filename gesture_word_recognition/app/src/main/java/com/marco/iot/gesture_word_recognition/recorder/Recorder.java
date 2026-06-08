@@ -51,7 +51,7 @@ public class Recorder implements ISensor {
             doRecording();
             releaseRecorder();
             float[] audioDataToFloat = AudioProcessing.convertShortToFloat(audioData);
-            WordData wordData = new WordData(audioDataToFloat, fsInHz);
+            WordData wordData = new WordData(audioDataToFloat);
 
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(() -> iRecorder.onRecordingDone(wordData));

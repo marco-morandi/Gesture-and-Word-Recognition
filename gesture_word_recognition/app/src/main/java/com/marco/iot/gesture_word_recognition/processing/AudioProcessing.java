@@ -15,29 +15,41 @@ public final class AudioProcessing {
 
     public static float[] preProcess(float[] signal) {
 
-        float[] processedSignal = new float[signal.length];
+        float[] processedSignal;
+        float[] envelope;
 
         // Log.i(TAG, "Signal length = " + signal.length);
         processedSignal = removeMean(signal);
         // Log.i(TAG, "Signal length after mean removed = " + processedSignal.length);
         processedSignal = trimSilence(processedSignal);
-        // Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
-        processedSignal = zNormalize(processedSignal);
+        Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
+        envelope = getEnvelope(processedSignal, Constants.WINDOW_SIZE);
+        Log.i(TAG, "Envelope length = " + envelope.length);
+        envelope = zNormalize(envelope);
         // Log.i(TAG, "Signal length after normalization = " + processedSignal.length);
-        processedSignal = downsample(processedSignal, Constants.DOWNSAMPLING_FACTOR);
-        // Log.i(TAG, "Signal length after downsampling = " + processedSignal.length);
 
-        return processedSignal;
+
+        return envelope;
     }
 
-    public static float[] downsample(float[] data, int factor) {
-        if (data == null) return null;
-        float[] result = new float[data.length / factor];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = data[i * factor];
+    public static float[] getEnvelope(float[] signal, int windowSize) {
+        if (signal == null || signal.length < windowSize) return signal;
+
+        int numWindows = signal.length / windowSize;
+        float[] envelope = new float[numWindows];
+
+        for (int i = 0; i < numWindows; i++) {
+            float sum = 0f;
+            for (int j = 0; j < windowSize; j++) {
+                float sample = signal[i * windowSize + j];
+                sum += sample * sample; // Elevamento al quadrato (Energia)
+            }
+            // Radice della media (Volume efficace nella finestra)
+            envelope[i] = (float) Math.sqrt(sum / windowSize);
         }
-        return result;
+        return envelope;
     }
+
 
     public static float[] zNormalize(float[] signal) {
         if (signal == null || signal.length == 0) return signal;
@@ -98,7 +110,7 @@ public final class AudioProcessing {
             );
         }
 
-        float threshold = maxAbs * 0.10f;
+        float threshold = maxAbs * 0.15f;
 
         int start = 0;
 
@@ -114,12 +126,12 @@ public final class AudioProcessing {
             end--;
         }
 
-        // padding di 500 campioni -> a 8kHz ca 50ms -> per recuperare eventuali attacchi di parola tagliati
-        if (start > 500) {
-            start -= 500;
+        // padding di 200 campioni -> a 8kHz ca 25ms -> per recuperare eventuali attacchi di parola tagliati
+        if (start > 200) {
+            start -= 200;
         }
-        if (end < signal.length - 500) {
-            end += 500;
+        if (end < signal.length - 200) {
+            end += 200;
         }
 
         // Log.i(TAG, "start = " + start);

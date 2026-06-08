@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements IAccelerometer, I
     }
 
     WordData preProcessWord(WordData word) {
-        float[] samples = AudioProcessing.preProcess(word.getSamples());
-        return new WordData(samples, word.getSampleRate()/Constants.DOWNSAMPLING_FACTOR);
+        float[] preProcessedAudio = AudioProcessing.preProcess(word.getSamples());
+        return new WordData(preProcessedAudio);
     }
 
 
