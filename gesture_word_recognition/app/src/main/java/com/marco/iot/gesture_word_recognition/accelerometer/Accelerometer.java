@@ -29,8 +29,8 @@ public class Accelerometer implements ISensor, SensorEventListener {
     public Accelerometer(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null)
-            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null)
+            sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         else
             Log.e(TAG, "Sensor not found");
 

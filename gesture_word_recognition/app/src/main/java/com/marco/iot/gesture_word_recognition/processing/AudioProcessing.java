@@ -22,7 +22,7 @@ public final class AudioProcessing {
         // Log.i(TAG, "Signal length after mean removed = " + processedSignal.length);
         processedSignal = trimSilence(processedSignal);
         // Log.i(TAG, "Signal length after silence removed = " + processedSignal.length);
-        processedSignal = normalizeByMax(processedSignal);
+        processedSignal = zNormalize(processedSignal);
         // Log.i(TAG, "Signal length after normalization = " + processedSignal.length);
         processedSignal = downsample(processedSignal, Constants.DOWNSAMPLING_FACTOR);
         // Log.i(TAG, "Signal length after downsampling = " + processedSignal.length);
@@ -39,28 +39,22 @@ public final class AudioProcessing {
         return result;
     }
 
-    public static float[] normalizeByMax(float[] signal) {
+    public static float[] zNormalize(float[] signal) {
+        if (signal == null || signal.length == 0) return signal;
 
-        if (signal == null || signal.length == 0) {
-            return signal;
-        }
+        float sum = 0f;
+        for (float v : signal) sum += v;
+        float mean = sum / signal.length;
 
-        float maxAbs = 0f;
-
-        for (float v : signal) {
-            maxAbs = Math.max(maxAbs, Math.abs(v));
-        }
-
-        if (maxAbs < 1e-6f) {
-            return signal.clone();
-        }
+        float sqSum = 0f;
+        for (float v : signal) sqSum += (float) Math.pow(v - mean, 2);
+        float stdDev = (float) Math.sqrt(sqSum / signal.length);
 
         float[] normalized = new float[signal.length];
-
         for (int i = 0; i < signal.length; i++) {
-            normalized[i] = signal[i] / maxAbs;
+            // Se stdDev è quasi zero (silenzio totale), restituiamo 0
+            normalized[i] = (stdDev > 1e-6f) ? (signal[i] - mean) / stdDev : 0f;
         }
-
         return normalized;
     }
 
@@ -128,8 +122,8 @@ public final class AudioProcessing {
             end += 500;
         }
 
-        Log.i(TAG, "start = " + start);
-        Log.i(TAG, "end = " + end);
+        // Log.i(TAG, "start = " + start);
+        // Log.i(TAG, "end = " + end);
 
 
 

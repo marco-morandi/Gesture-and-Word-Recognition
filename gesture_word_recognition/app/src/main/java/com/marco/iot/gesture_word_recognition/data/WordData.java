@@ -1,16 +1,16 @@
 package com.marco.iot.gesture_word_recognition.data;
 
 public class WordData {
-    private float[] samples;
+    private float[] data;
     private int sampleRate;
 
-    public WordData(float[] samples, int sampleRate) {
-        this.samples = samples;
+    public WordData(float[] data, int sampleRate) {
+        this.data = data;
         this.sampleRate = sampleRate;
     }
 
     public float[] getSamples() {
-        return samples;
+        return data;
     }
 
     public int getSampleRate() {

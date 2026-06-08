@@ -19,34 +19,28 @@ public final class AccelerometerProcessing {
         //Log.i(TAG, "Signal = " + signal.toString());
         processedSignal = removeMean(signal);
         //Log.i(TAG, "Signal after mean removed = " + processedSignal.toString());
-        processedSignal = normalizeByMax(processedSignal);
+        processedSignal = zNormalize(processedSignal);
         //Log.i(TAG, "Signal after normalization = " + processedSignal.toString());
 
         return processedSignal;
     }
 
-    public static float[] normalizeByMax(float[] signal) {
+    public static float[] zNormalize(float[] signal) {
+        if (signal == null || signal.length == 0) return signal;
 
-        if (signal == null || signal.length == 0) {
-            return signal;
-        }
+        float sum = 0f;
+        for (float v : signal) sum += v;
+        float mean = sum / signal.length;
 
-        float maxAbs = 0f;
-
-        for (float v : signal) {
-            maxAbs = Math.max(maxAbs, Math.abs(v));
-        }
-
-        if (maxAbs < 1e-6f) {
-            return signal;
-        }
+        float sqSum = 0f;
+        for (float v : signal) sqSum += (float) Math.pow(v - mean, 2);
+        float stdDev = (float) Math.sqrt(sqSum / signal.length);
 
         float[] normalized = new float[signal.length];
-
         for (int i = 0; i < signal.length; i++) {
-            normalized[i] = signal[i] / maxAbs;
+            // Se stdDev è quasi zero (silenzio totale), restituiamo 0
+            normalized[i] = (stdDev > 1e-6f) ? (signal[i] - mean) / stdDev : 0f;
         }
-
         return normalized;
     }
 
